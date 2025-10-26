@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light" style="">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trabajo Práctico TCP IMC remoto</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Times+New+Roman:wght@400;700&amp;family=Arial:wght@400;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 32px 80px;
+        position: relative;
+        box-sizing: border-box;
+        font-family: "Times New Roman", serif;
+        line-height: 1.6;
+        color: #1a365d;
+        background-color: white;
+      }
+
+      .cover-page {
+        text-align: center;
+        page-break-after: always;
+        margin-bottom: 60px;
+        padding-top: 100px;
+      }
+
+      .cover-page h1 {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1a365d;
+        margin-bottom: 40px;
+        border-bottom: 3px solid #2c5aa0;
+        padding-bottom: 15px;
+      }
+
+      .author-section,
+      .presenter-section,
+      .course-section,
+      .location-section {
+        margin: 30px 0;
+        font-size: 16px;
+      }
+
+      .author-section h3,
+      .presenter-section h3,
+      .course-section h3 {
+        color: #2c5aa0;
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      .section {
+        margin: 40px 0;
+        padding: 20px 0;
+      }
+
+      .section h2 {
+        color: #1a365d;
+        font-size: 22px;
+        border-left: 5px solid #2c5aa0;
+        padding-left: 15px;
+        margin-bottom: 20px;
+        background-color: #f7fafc;
+        padding: 15px;
+      }
+
+      .section h3 {
+        color: #2c5aa0;
+        font-size: 18px;
+        margin: 25px 0 15px 0;
+      }
+
+      .step-list {
+        counter-reset: step-counter;
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .step-list li {
+        counter-increment: step-counter;
+        margin: 15px 0;
+        padding: 12px 15px;
+        background-color: #f8fafc;
+        border-left: 4px solid #4299e1;
+        position: relative;
+      }
+
+      .step-list li::before {
+        content: counter(step-counter);
+        position: absolute;
+        left: -15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #2c5aa0;
+        color: white;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .code-block {
+        background-color: #2d3748;
+        color: #e2e8f0;
+        padding: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        border-radius: 4px;
+        margin: 10px 0;
+        border-left: 4px solid #4299e1;
+      }
+
+      .command {
+        background-color: #edf2f7;
+        color: #2d3748;
+        padding: 8px 12px;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        border-radius: 3px;
+        display: inline-block;
+        margin: 5px 0;
+        border: 1px solid #cbd5e0;
+      }
+
+      .note {
+        background-color: #fef5e7;
+        border: 1px solid #f6ad55;
+        border-radius: 4px;
+        padding: 15px;
+        margin: 15px 0;
+        color: #744210;
+      }
+
+      .note::before {
+        content: "📝 Nota: ";
+        font-weight: bold;
+      }
+
+      .warning {
+        background-color: #fed7d7;
+        border: 1px solid #fc8181;
+        border-radius: 4px;
+        padding: 15px;
+        margin: 15px 0;
+        color: #742a2a;
+      }
+
+      .warning::before {
+        content: "⚠️ Importante: ";
+        font-weight: bold;
+      }
+
+      .subsection {
+        margin: 25px 0;
+        padding-left: 20px;
+      }
+
+      .bullet-list {
+        margin-left: 20px;
+      }
+
+      .bullet-list li {
+        margin: 10px 0;
+        padding: 8px 0;
+      }
+
+      .page-number {
+        position: fixed;
+        bottom: 20px;
+        right: 50%;
+        transform: translateX(50%);
+        font-size: 12px;
+        color: #718096;
+      }
+
+      p {
+        text-align: justify;
+        margin: 12px 0;
+      }
+
+      strong {
+        color: #2c5aa0;
+      }
+    </style>
+  </head>
+  <body style="">
+    <!-- Portada -->
+    <div class="cover-page">
+      <h1>Trabajo Práctico TCP IMC remoto</h1>
+
+      <div class="author-section">
+        <h3>Presentado por:</h3>
+        <p style="text-align: center">
+          <strong>Jeison Alexis Rodríguez Angarita</strong>CC 1005236073
+        </p>
+        <p style="text-align: center">
+          <strong>Daniel Eduardo Dávila Quintero</strong>CC 1092730371
+        </p>
+      </div>
+
+      <div class="presenter-section">
+        <h3>Presentado a:</h3>
+        <p style="text-align: center">
+          <strong>Luz Marina Santos Jaimes</strong>
+        </p>
+      </div>
+
+      <div class="course-section">
+        <h3>Asignatura:</h3>
+        <p style="text-align: center"><strong>Redes, Grupo B</strong></p>
+      </div>
+
+      <div class="location-section">
+        <p style="text-align: center">
+          <strong>Pamplona, Norte de Santander&nbsp;</strong>
+        </p>
+        <p style="text-align: center">25 de octubre del 2025</p>
+      </div>
+    </div>
+
+    <!-- Primera Sección -->
+    <div class="section">
+      <h2>1. Instalación de Paquetes y Configuración del Servidor</h2>
+
+      <p>
+        En esta sección configuraremos el servidor remoto que realizará las
+        operaciones para calcular el Índice de Masa Corporal (IMC). El servidor
+        estará ejecutándose en Zorin OS y será accesible desde múltiples
+        clientes.
+      </p>
+
+      <h3>Configuración Inicial del Servidor</h3>
+
+      <ol class="step-list">
+        <li>
+          <strong>Cambiar al modo de súper usuario</strong>
+          <div class="code-block">sudo -i</div>
+          <p>
+            Este comando nos permite ejecutar las siguientes operaciones con
+            privilegios administrativos.
+          </p>
+        </li>
+
+        <li>
+          <strong>Actualizar paquetes del sistema</strong>
+          <div class="code-block">apt update &amp;&amp; apt upgrade -y</div>
+          <p>
+            Actualizamos la lista de paquetes y sus versiones para tener el
+            sistema al día.
+          </p>
+        </li>
+
+        <li>
+          <strong>Instalar Python3</strong>
+          <div class="code-block">apt install -y python3 python3-pip</div>
+          <p>
+            Instalamos Python3 y pip para poder ejecutar nuestras aplicaciones.
+          </p>
+        </li>
+
+        <li>
+          <strong>Instalar Git</strong>
+          <div class="code-block">apt install -y git</div>
+          <p>
+            Necesario para clonar el repositorio con el código del proyecto.
+          </p>
+        </li>
+
+        <li>
+          <strong>Clonar el repositorio del proyecto</strong>
+          <div class="code-block">
+            git clone
+            https://github.com/JeisonAlexis/CalculadoraRemota-PracticaRedes.git
+          </div>
+          <p>Descargamos el código fuente de la calculadora de IMC remota.</p>
+        </li>
+
+        <li>
+          <strong>Obtener la dirección IP del servidor</strong>
+          <div class="code-block">ip addr show</div>
+          <p>
+            Necesitamos conocer la IP para que los clientes puedan conectarse al
+            servidor.
+          </p>
+          <div class="image-placeholder">
+            <p
+              style="
+                text-align: center;
+                padding: 20px;
+                background: #f0f0f0;
+                border: 2px dashed #ccc;
+                margin: 10px 0;
+              "
+            >
+              <img
+                src="https://page.gensparksite.com/get_upload_url/76190e3ef8e5e949743889d2a0b6aee5ed8c6fac09ce860e405c75c17050646a/default/16b2a57b-3603-478d-af78-aeccb973264d"
+                alt="Uploaded Image"
+                data-height-listener-added="true"
+                style="width: 468px; height: 197.227px"
+              />
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <h3>Configuración del Firewall y Puertos</h3>
+
+      <p>
+        Para permitir las conexiones TCP en el puerto específico del servicio,
+        configuramos el firewall:
+      </p>
+
+      <div class="code-block">sudo apt install -y ufw</div>
+      <div class="code-block">sudo ufw allow 22/tcp</div>
+      <div class="code-block">sudo ufw allow 9999/tcp</div>
+      <div class="code-block">sudo ufw enable</div>
+      <div class="code-block">sudo ufw status verbose</div>
+
+      <div class="note">
+        Para simplificar la práctica, se recomienda desactivar el firewall
+        completamente:
+        <div class="code-block">sudo ufw disable</div>
+      </div>
+
+      <h3>Ejecución del Servidor</h3>
+
+      <div class="warning">
+        Ejecuta el servidor para que esté escuchando las solicitudes. Recuerda
+        que no puedes cerrar esta terminal mientras el servidor esté en
+        funcionamiento.
+      </div>
+
+      <div class="code-block">
+        cd CalculadoraRemota-PracticaRedes<br />python3 servidor.py
+      </div>
+
+      <div class="image-placeholder">
+        <p
+          style="
+            text-align: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            margin: 10px 0;
+          "
+        >
+          <img
+            src="https://page.gensparksite.com/get_upload_url/76190e3ef8e5e949743889d2a0b6aee5ed8c6fac09ce860e405c75c17050646a/default/d752f540-25c2-4ccd-a473-96961d1b333f"
+            alt="Uploaded Image"
+            data-height-listener-added="true"
+          />
+        </p>
+      </div>
+    </div>
+
+    <!-- Segunda Sección -->
+    <div class="section">
+      <h2>2. Configuración del Cliente</h2>
+
+      <p>
+        En esta sección configuraremos los clientes que se conectarán al
+        servidor para solicitar cálculos de IMC. Los clientes pueden ejecutarse
+        desde diferentes sistemas operativos.
+      </p>
+
+      <h3>Configuración en Ubuntu (Cliente)</h3>
+
+      <p>
+        Desde un sistema Ubuntu, realizamos la misma instalación básica que en
+        el servidor:
+      </p>
+
+      <ol class="step-list">
+        <li>
+          <strong>Instalar dependencias</strong>
+          <div class="code-block">
+            sudo apt update<br />sudo apt install -y python3 python3-pip git
+            python3-tk
+          </div>
+          <p>Incluimos python3-tk (Tkinter) para la interfaz gráfica.</p>
+        </li>
+
+        <li>
+          <strong>Clonar el repositorio</strong>
+          <div class="code-block">
+            git clone
+            https://github.com/JeisonAlexis/CalculadoraRemota-PracticaRedes.git<br />cd
+            CalculadoraRemota-PracticaRedes
+          </div>
+        </li>
+      </ol>
+
+      <h3>Ejecución desde Línea de Comandos</h3>
+
+      <p>
+        Para enviar datos al servidor desde la consola, ejecuta el siguiente
+        comando. Asegúrate de estar en la ruta del repositorio y de configurar
+        la IP correspondiente de tu servidor:
+      </p>
+
+      <div class="code-block">python3 cliente_consola.py [IP_DEL_SERVIDOR]</div>
+
+      <div class="image-placeholder">
+        <p
+          style="
+            text-align: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            margin: 10px 0;
+          "
+        >
+          <img
+            src="https://page.gensparksite.com/get_upload_url/76190e3ef8e5e949743889d2a0b6aee5ed8c6fac09ce860e405c75c17050646a/default/858607a8-c582-471e-8236-64dfb9953171"
+            alt="Uploaded Image"
+            data-height-listener-added="true"
+            style="width: 541px; height: 89.4344px"
+          />
+        </p>
+      </div>
+
+      <h3>Ejecución con Interfaz Gráfica</h3>
+
+      <p>
+        Para usar la interfaz gráfica, primero debes modificar el archivo
+        <span class="command">cliente_gui.py</span> y cambiar la variable
+        <strong>SERVER_HOST</strong> por la IP de tu servidor:
+      </p>
+
+      <div class="code-block">python3 cliente_gui.py</div>
+
+      <div class="image-placeholder">
+        <p
+          style="
+            text-align: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            margin: 10px 0;
+          "
+        >
+          <img
+            src="https://page.gensparksite.com/get_upload_url/76190e3ef8e5e949743889d2a0b6aee5ed8c6fac09ce860e405c75c17050646a/default/a77b7ef0-d2ac-4f2d-a709-1a9305dda2dd"
+            alt="Uploaded Image"
+            data-height-listener-added="true"
+            style="width: 429px; height: 274.74px"
+          />
+        </p>
+      </div>
+
+      <div class="note">
+        Desde Zorin OS (el servidor) deberían aparecer las conexiones
+        realizadas, en este caso dos conexiones de la misma IP de Ubuntu.
+      </div>
+
+      <div class="image-placeholder">
+        <p
+          style="
+            text-align: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            margin: 10px 0;
+          "
+        >
+          <img
+            src="https://page.gensparksite.com/get_upload_url/76190e3ef8e5e949743889d2a0b6aee5ed8c6fac09ce860e405c75c17050646a/default/cff8ab1b-04ef-4de3-a11c-5f6d5b7fdaca"
+            alt="Uploaded Image"
+            data-height-listener-added="true"
+          />
+        </p>
+      </div>
+
+      <h3>Configuración en Windows</h3>
+
+      <p>
+        También puedes enviar solicitudes desde Windows siguiendo los mismos
+        pasos:
+      </p>
+
+      <ul class="bullet-list">
+        <li>Instalar Python3 desde <strong>python.org</strong></li>
+        <li>Instalar Git desde <strong>git-scm.com</strong></li>
+        <li>Clonar el repositorio usando Git Bash o Command Prompt</li>
+        <li>Ejecutar los scripts de cliente como se describió anteriormente</li>
+      </ul>
+
+      <div class="image-placeholder">
+        <p
+          style="
+            text-align: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            margin: 10px 0;
+          "
+        >
+          <img
+            src="https://page.gensparksite.com/get_upload_url/76190e3ef8e5e949743889d2a0b6aee5ed8c6fac09ce860e405c75c17050646a/default/0f84892e-723c-44d6-9508-49b9b5b32a70"
+            alt="Uploaded Image"
+            data-height-listener-added="true"
+          />
+        </p>
+      </div>
+    </div>
+
+    <!-- Tercera Sección -->
+    <div class="section">
+      <h2>3. Captura de Tráfico con Wireshark</h2>
+
+      <p>
+        Para analizar el tráfico de red generado durante la comunicación TCP
+        entre cliente y servidor, utilizaremos Wireshark en el servidor.
+      </p>
+
+      <h3>Instalación de Wireshark</h3>
+
+      <p>En Zorin OS (el servidor), instala Wireshark:</p>
+
+      <div class="code-block">
+        sudo apt update<br />sudo apt install -y wireshark
+      </div>
+
+      <p>
+        Durante la instalación, acepta configurar Wireshark para usuarios no
+        privilegiados si se solicita.
+      </p>
+
+      <h3>Procedimiento de Captura</h3>
+
+      <ol class="step-list">
+        <li>
+          <strong>Iniciar Wireshark</strong>
+          <p>
+            Abre Wireshark desde el menú de aplicaciones o ejecutando
+            <span class="command">wireshark</span> en terminal.
+          </p>
+        </li>
+
+        <li>
+          <strong>Configurar la captura</strong>
+          <p>
+            Selecciona la interfaz de red apropiada (generalmente eth0 o la
+            interfaz conectada a la red).
+          </p>
+        </li>
+
+        <li>
+          <strong>Iniciar captura antes de las pruebas</strong>
+          <div class="warning">
+            Es crucial iniciar la captura ANTES de realizar las solicitudes
+            desde los clientes.
+          </div>
+        </li>
+
+        <li>
+          <strong>Realizar las pruebas</strong>
+          <p>
+            Ejecuta las conexiones desde los diferentes clientes (Ubuntu,
+            Windows) tanto por consola como por interfaz gráfica.
+          </p>
+        </li>
+
+        <li>
+          <strong>Detener la captura y filtrar</strong>
+          <p>
+            Una vez completadas las pruebas, detén la captura y aplica el
+            filtro:
+          </p>
+          <div class="code-block">tcp.port == 9999</div>
+          <p>
+            Este filtro mostrará únicamente el tráfico TCP en el puerto 9999
+            utilizado por nuestra aplicación.
+          </p>
+        </li>
+      </ol>
+
+      <h3>Análisis de Resultados</h3>
+
+      <p>En la captura filtrada podrás observar:</p>
+
+      <ul class="bullet-list">
+        <li>
+          <strong>Establecimiento de conexión TCP:</strong> Three-way handshake
+          (SYN, SYN-ACK, ACK)
+        </li>
+        <li>
+          <strong>Intercambio de datos:</strong> Envío de peso y estatura,
+          respuesta con cálculo de IMC
+        </li>
+        <li>
+          <strong>Cierre de conexión:</strong> Terminación ordenada de la sesión
+          TCP
+        </li>
+        <li>
+          <strong>Direcciones IP:</strong> Identificación de clientes Ubuntu y
+          Windows conectándose al servidor
+        </li>
+      </ul>
+
+      <div class="note">
+        Guarda la captura de Wireshark para incluir capturas de pantalla en tu
+        reporte final, mostrando el tráfico TCP generado por la aplicación de
+        cálculo de IMC remoto.
+      </div>
+
+      <div class="image-placeholder">
+        <p
+          style="
+            text-align: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            margin: 10px 0;
+          "
+        >
+          <img
+            src="https://page.gensparksite.com/get_upload_url/76190e3ef8e5e949743889d2a0b6aee5ed8c6fac09ce860e405c75c17050646a/default/b73916ff-43d4-4332-8c4f-7d6a6fe5e2c9"
+            alt="Uploaded Image"
+            data-height-listener-added="true"
+          />
+        </p>
+      </div>
+    </div>
+
+    <div class="page-number"><br /></div>
+
+    <script
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015"
+      integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ=="
+      data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}'
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
