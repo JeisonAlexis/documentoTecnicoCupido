@@ -96,11 +96,13 @@
 <h2>6. Experimentos</h2>
 <p>Se diseñaron tres redes de prueba representativas de distintos comportamientos.</p>
 <p><strong>Ciclo con Transicion Muerta</strong></p>
-<p><img src="https://www.genspark.ai/api/files/s/PzWn10SQ" alt="image.png" /></p>
+<img src="t_muerta.png" alt="ciclo" />
+
 <p><strong>Cola-Recurso</strong></p>
-<p><img src="https://www.genspark.ai/api/files/s/9giOT8oP" alt="image.png" /></p>
-<p><strong>Buffer de Red (Sincronizacion de paquetes)</strong></p>
-<p><img src="https://www.genspark.ai/api/files/s/UDIWtaX5" alt="image.png" /></p>
+<img src="cola_recurso.png" alt="cola" />
+
+<p><strong>Buffer de Red</strong></p>
+<img src="buffer.png" alt="buffer" />
 <h2>7. Análisis</h2>
 <h3>7.1 Diferencia Fundamental entre Alcanzabilidad y Cobertura</h3>
 <p>La distinción entre alcanzabilidad exacta y cobertura es, conceptualmente, la diferencia entre <strong>exactitud</strong> y <strong>aproximación conservadora</strong>. La alcanzabilidad exacta responde si un marcado específico es literalmente alcanzable; la cobertura responde si existe un marcado al menos tan rico en tokens como el objetivo. Un resultado positivo de cobertura no implica alcanzabilidad exacta: se puede cubrir un marcado <code>[2, 0]</code> si existe <code>[3, 0]</code>, pero <code>[2, 0]</code> podría no ser alcanzable directamente.</p>
