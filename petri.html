@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+          body {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 2rem 80px;
+            position: relative;
+          }
+          @media screen and (max-width: 500px) {
+            body {
+              padding: 1rem 16px;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Informe Técnico: Análisis de Redes de Petri en Motor Matricial</h1>
+<p><strong>Presentado por:</strong></p>
+<p>Jeison Alexis Rodriguez Angarita CC 1005236073</p>
+<p>Daniel Eduardo Davila Quintero CC 1092730371</p>
+<p><strong>Presentado a:</strong> Jorge Omar Portilla Jaimes</p>
+<p><strong>Asignatura:</strong> Modelado de Sistemas Discretos</p>
+<hr />
+<h2>1. Introducción</h2>
+<p>El presente proyecto tomó como punto de partida el proyecto existente hecho en clase en Python orientado al dibujo interactivo de redes de Petri y se extendio con un conjunto de funcionalidades de análisis formal. El objetivo principal fue proporcionar al usuario no solo la posibilidad de construir redes visualmente, sino también de verificar propiedades de comportamiento directamente desde la interfaz gráfica, sin necesidad de herramientas externas.</p>
+<hr />
+<h2>2. Marco Teórico</h2>
+<h3>2.1 Definición de Red de Petri</h3>
+<p>Una red de Petri es una tupla <code>N = (P, T, F, W, M₀)</code> donde:</p>
+<ul>
+<li><strong>P</strong> es un conjunto finito de <em>lugares</em>, representados como círculos.</li>
+<li><strong>T</strong> es un conjunto finito de <em>transiciones</em>, representadas como rectángulos o barras.</li>
+<li><strong>F ⊆ (P × T) ∪ (T × P)</strong> es el conjunto de <em>arcos dirigidos</em>.</li>
+<li><strong>W : F → ℕ⁺</strong> es la función de <em>peso</em> de cada arco.</li>
+<li><strong>M₀ : P → ℕ</strong> es el <em>marcado inicial</em>, que asigna un número de <em>tokens</em> a cada lugar.</li>
+</ul>
+<p>Una transición <code>t ∈ T</code> está <strong>habilitada</strong> bajo un marcado <code>M</code> si, para cada lugar de entrada <code>p</code> con arco hacia <code>t</code>, se cumple <code>M(p) ≥ W(p, t)</code>. Al <strong>disparar</strong> <code>t</code>, el marcado evoluciona restando los tokens consumidos y sumando los producidos.</p>
+<h3>2.2 Alcanzabilidad vs. Cobertura</h3>
+<p>El <strong>problema de alcanzabilidad</strong> pregunta si existe una secuencia de disparos que lleve desde <code>M₀</code> hasta un marcado objetivo exacto <code>Mₓ</code>.</p>
+<p>La <strong>cobertura</strong>, en cambio, pregunta si existe un marcado alcanzable <code>M'</code> tal que <code>M'(p) ≥ Mₓ(p)</code> para todo lugar <code>p</code>. Este criterio es más débil: no exige igualdad exacta.</p>
+<h3>2.3 Árbol de Cobertura</h3>
+<p>El árbol de cobertura (o árbol de Karp-Miller) es una estructura finita que representa de forma compacta el conjunto de cobertura de una red, incluso cuando el espacio de estados es infinito. Su construcción sigue un proceso BFS o DFS sobre marcados, con la siguiente regla de <strong>aceleración</strong>: si en el camino desde la raíz hasta el nodo actual existe un ancestro con marcado <code>M_anc</code> tal que <code>M_actual ≥ M_anc</code>, entonces los lugares que han crecido se elevan al símbolo <strong>ω</strong> (omega), que representa un valor potencialmente ilimitado.</p>
+<p>La presencia de ω en cualquier nodo del árbol indica que el lugar correspondiente <strong>no está acotado</strong>. Los duplicados se detectan comparando nodos con marcados ya presentes en el árbol, lo que garantiza la terminación del algoritmo.</p>
+<h3>2.4 Ecuación Matricial de Estado</h3>
+<p>El comportamiento de la red puede expresarse matricialmente. Se definen:</p>
+<ul>
+<li><strong>C⁻ (Pre)</strong>: matriz de incidencia hacia atrás, donde <code>C⁻[p][t]</code> es el peso del arco de <code>p</code> a <code>t</code>.</li>
+<li><strong>C⁺ (Post)</strong>: matriz de incidencia hacia adelante, donde <code>C⁺[p][t]</code> es el peso del arco de <code>t</code> a <code>p</code>.</li>
+<li><strong>C = C⁺ − C⁻</strong>: matriz de incidencia neta.</li>
+</ul>
+<p>La ecuación de estado es <code>M' = M + C · σ</code>, donde <code>σ</code> es el vector de disparos. En la implementación, esta representación matricial se utiliza en el módulo <code>engine.py</code> para verificar de forma eficiente si una transición está habilitada y para calcular el marcado resultante de un disparo.</p>
+<hr />
+<h2>3. Descripción del Sistema</h2>
+<h3>3.1 Proyecto Base y Extensiones</h3>
+<p>El proyecto base ofrecía capacidades de dibujo: añadir lugares, transiciones y arcos sobre un lienzo interactivo, asignar tokens iniciales y guardar o cargar la red en formato. La lógica interna de la red estaba encapsulada en <code>model.py</code>.</p>
+<p>Las extensiones desarrolladas son:</p>
+<ul>
+<li><strong><code>engine.py</code></strong>: se amplió con métodos para el cálculo matricial de habilitación y disparo, y para la búsqueda BFS sobre el espacio de estados.</li>
+<li><strong><code>coverage.py</code></strong>: módulo nuevo que implementa la construcción del árbol de cobertura con aceleración ω y detección de nodos duplicados.</li>
+<li><strong><code>analysis.py</code></strong>: módulo nuevo que agrupa todas las funciones de análisis formal (verificación de secuencias, alcanzabilidad, cobertura, bloqueos, cuellos de botella, vivacidad y acotación).</li>
+<li><strong><code>gui.py</code></strong>: se incorporaron botones en el panel lateral de la interfaz para invocar cada función de análisis y mostrar los resultados en cuadros de diálogo, ademas de un cambio de estilo.</li>
+</ul>
+<h3>3.2 Arquitectura General</h3>
+<p>La integración sigue un diseño en capas. El módulo <code>model.py</code> expone la estructura de la red; <code>engine.py</code> opera sobre ella mediante cálculo matricial; <code>coverage.py</code> consume el motor para construir el árbol; y <code>analysis.py</code> orquesta ambos mecanismos.</p>
+<p>El <strong>enfoque híbrido</strong> es especialmente relevante en la función de alcanzabilidad exacta: antes de ejecutar la búsqueda BFS, se consulta el árbol de cobertura para detectar si la red es no acotada. Si lo es y la búsqueda BFS alcanza su límite de estados o profundidad sin encontrar la respuesta, el sistema devuelve <strong>&quot;no sé&quot;</strong> en lugar de un falso negativo, evitando así conclusiones incorrectas.</p>
+<hr />
+<h2>4. Funcionalidades Implementadas</h2>
+<h3>4.1 Verificación de Secuencias de Disparo</h3>
+<p>Dada una secuencia de transiciones especificada por el usuario, la función la simula paso a paso desde el marcado inicial. Si alguna transición no está habilitada en el marcado actual, se informa el <strong>número del paso fallido</strong> y el <strong>marcado en ese instante</strong>, permitiendo al usuario identificar con precisión el punto de error. Si la secuencia completa es válida, se muestra el marcado final alcanzado.</p>
+<h3>4.2 Alcanzabilidad Exacta</h3>
+<p>Implementa una búsqueda BFS sobre el grafo de marcados alcanzables. Para controlar la explosión de estados, se establecen dos límites configurables: un <strong>límite de profundidad</strong> (máximo de disparos desde el inicio) y un <strong>límite de número de estados</strong> explorados. Si el marcado objetivo se encuentra, se confirma su alcanzabilidad. Si la búsqueda se agota sin encontrarlo y la red es detectada como no acotada por el árbol de cobertura, se reporta <strong>&quot;no sé&quot;</strong>. Si la red es acotada y el marcado no aparece, se concluye que <strong>no es alcanzable</strong>.</p>
+<h3>4.3 Cobertura</h3>
+<p>Utilizando el árbol de cobertura construido por <code>coverage.py</code>, se verifica si existe algún nodo cuyo marcado <em>cubre</em> (es decir, es componente a componente mayor o igual que) el marcado objetivo indicado por el usuario. La presencia de ω en un lugar se interpreta como que ese lugar puede tomar cualquier valor, lo que amplía el conjunto de marcados cubiertos.</p>
+<h3>4.4 Detección de Bloqueos</h3>
+<p>La función recorre el espacio de estados explorado (o el árbol de cobertura) y verifica si existe algún marcado en el que <strong>ninguna transición esté habilitada</strong>. De encontrar uno, se reporta ese marcado como estado de bloqueo (<em>deadlock</em>). Si no se encuentra ninguno dentro del espacio explorado, se indica que no se detectaron bloqueos.</p>
+<h3>4.5 Detección de Cuellos de Botella</h3>
+<p>Se analiza la distribución de tokens en cada lugar a lo largo del espacio de estados explorado. Se calcula el promedio de tokens por lugar y se identifican aquellos cuya carga supera un <strong>factor de umbral</strong> (por defecto, 2× el promedio). Estos lugares se reportan como posibles cuellos de botella, ya que concentran desproporcionadamente los recursos del sistema.</p>
+<h3>4.6 Vivacidad Básica: Transiciones Muertas</h3>
+<p>Durante la exploración del espacio de estados, se registra qué transiciones han sido habilitadas al menos una vez. Aquellas que <strong>nunca resultan habilitadas</strong> en ningún marcado alcanzable explorado se clasifican como <strong>transiciones muertas</strong>. Esta propiedad es un indicador crítico de partes del modelo que nunca podrán ejecutarse, lo que generalmente señala un error de diseño.</p>
+<h3>4.7 Acotación</h3>
+<p>La acotación se determina directamente a partir del árbol de cobertura: si en cualquier nodo del árbol aparece el símbolo ω para algún lugar, ese lugar se considera <strong>no acotado</strong>, lo que implica que la red en su conjunto tampoco lo es. Si el árbol se construye completamente sin que aparezca ω, la red se clasifica como <strong>acotada</strong>.</p>
+<hr />
+<h2>5. Métodos Usados</h2>
+<h3>5.1 Método Exacto: BFS con Límites</h3>
+<p>La búsqueda en anchura explora sistemáticamente todos los marcados alcanzables desde <code>M₀</code>, manteniendo un conjunto de estados visitados para evitar revisitar marcados ya procesados (<em>poda por estados visitados</em>). Dos parámetros de corte —límite de profundidad y límite de número de estados— evitan que la exploración se vuelva intratable ante redes de gran espacio de estados. Este método garantiza la corrección de la respuesta dentro de los límites establecidos.</p>
+<h3>5.2 Método de Cobertura: Árbol de Karp-Miller</h3>
+<p>El árbol de cobertura se construye expandiendo marcados e introduciendo aceleraciones ω cuando se detecta crecimiento estrictamente monotónico en el camino desde la raíz. Los nodos duplicados (marcados ya existentes en el árbol) se detectan mediante comparación directa y no se expanden nuevamente, garantizando la terminación. El árbol resultante es finito incluso para redes con espacio de estados infinito.</p>
+<h3>5.3 Aporte Híbrido</h3>
+<p>La combinación de ambos métodos es el aporte técnico más relevante del proyecto. El árbol de cobertura actúa como <em>oráculo</em> para la búsqueda BFS: si el árbol detecta no acotación, la incapacidad del BFS de encontrar un marcado objetivo dentro de sus límites no puede interpretarse como prueba de no alcanzabilidad, por lo que el sistema responde honestamente con <strong>&quot;no sé&quot;</strong>. Esto evita falsos negativos y hace el análisis más robusto.</p>
+<hr />
+<h2>6. Experimentos</h2>
+<p>Se diseñaron tres redes de prueba representativas de distintos comportamientos.</p>
+<p><strong>Ciclo con Transicion Muerta</strong></p>
+<p><img src="https://www.genspark.ai/api/files/s/PzWn10SQ" alt="image.png" /></p>
+<p><strong>Cola-Recurso</strong></p>
+<p><img src="https://www.genspark.ai/api/files/s/9giOT8oP" alt="image.png" /></p>
+<p><strong>Buffer de Red (Sincronizacion de paquetes)</strong></p>
+<p><img src="https://www.genspark.ai/api/files/s/UDIWtaX5" alt="image.png" /></p>
+<h2>7. Análisis</h2>
+<h3>7.1 Diferencia Fundamental entre Alcanzabilidad y Cobertura</h3>
+<p>La distinción entre alcanzabilidad exacta y cobertura es, conceptualmente, la diferencia entre <strong>exactitud</strong> y <strong>aproximación conservadora</strong>. La alcanzabilidad exacta responde si un marcado específico es literalmente alcanzable; la cobertura responde si existe un marcado al menos tan rico en tokens como el objetivo. Un resultado positivo de cobertura no implica alcanzabilidad exacta: se puede cubrir un marcado <code>[2, 0]</code> si existe <code>[3, 0]</code>, pero <code>[2, 0]</code> podría no ser alcanzable directamente.</p>
+<p>Esta distinción es especialmente evidente en la red del bucle multiplicador: no se puede determinar si <code>[0, 5, 0]</code> es exactamente alcanzable, pero la cobertura confirma que cualquier cantidad de tokens en P2 puede ser <em>cubierta</em>, lo cual es igualmente informativo para muchos propósitos prácticos.</p>
+<h3>7.2 Cuándo Usar Cada Método</h3>
+<ul>
+<li><strong>Alcanzabilidad exacta</strong>: apropiada cuando la red es acotada o cuando el espacio de estados es explorable dentro de los límites establecidos. Proporciona certeza absoluta sobre la existencia de un marcado objetivo.</li>
+<li><strong>Cobertura</strong>: indicada para redes no acotadas, o cuando se desea verificar que un sistema <em>puede al menos</em> alcanzar cierto nivel de actividad. También es útil como análisis preliminar para determinar si la búsqueda exacta tiene sentido.</li>
+</ul>
+<h3>7.3 Ventajas y Desventajas</h3>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Alcanzabilidad exacta</th>
+<th>Cobertura (árbol)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Precisión</strong></td>
+<td>Exacta, sin ambigüedad</td>
+<td>Aproximada (cubrir ≠ alcanzar)</td>
+</tr>
+<tr>
+<td><strong>Manejo de redes infinitas</strong></td>
+<td>No aplica directamente</td>
+<td>Siempre termina</td>
+</tr>
+<tr>
+<td><strong>Detecta no acotación</strong></td>
+<td>No (solo constata límite)</td>
+<td>Directamente mediante ω</td>
+</tr>
+<tr>
+<td><strong>Proporciona secuencia</strong></td>
+<td>Puede reconstruirse</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Riesgo de explosión</strong></td>
+<td>Alto en redes no acotadas</td>
+<td>Moderado (ω limita expansión)</td>
+</tr>
+<tr>
+<td><strong>Respuesta ante incertidumbre</strong></td>
+<td>&quot;No sé&quot; (con enfoque híbrido)</td>
+<td>Siempre responde</td>
+</tr>
+</tbody>
+</table>
+<h3>7.4 Complejidad Aproximada</h3>
+<ul>
+<li><strong>BFS (alcanzabilidad exacta):</strong> la complejidad es <code>O(|R|)</code> en el número de marcados alcanzables <code>|R|</code>, que en el peor caso es exponencial en el número de lugares y tokens. Para redes no acotadas, <code>|R|</code> puede ser infinito, de ahí la necesidad de los límites de corte.</li>
+<li><strong>Árbol de cobertura:</strong> aunque el espacio de estados subyacente puede ser infinito, la introducción del símbolo ω garantiza que el árbol tiene un número finito de nodos. Sin embargo, si la red tiene muchos lugares con ω independientes, el árbol puede crecer de forma significativa. La complejidad en tiempo es exponencial en el número de lugares en el peor caso teórico, aunque en la práctica es manejable para redes de tamaño medio.</li>
+</ul>
+<hr />
+<h2>8. Conclusiones</h2>
+<h3>8.1 Aprendizajes</h3>
+<p>El desarrollo de este proyecto puso de manifiesto que <strong>cubrir y alcanzar son conceptos fundamentalmente distintos</strong>, y que confundirlos puede llevar a conclusiones erróneas en el análisis de sistemas. El árbol de cobertura demostró ser una herramienta poderosa y complementaria: donde la búsqueda exacta falla por limitaciones computacionales, el árbol proporciona información cualitativa valiosa sobre el comportamiento a largo plazo del sistema.</p>
+<p>Igualmente importante fue la lección sobre la <strong>honestidad computacional</strong>: en lugar de reportar falsos negativos cuando la búsqueda BFS se agota, el sistema responde &quot;no sé&quot;, reconociendo los límites del análisis. Esta transparencia es esencial en herramientas de verificación formal.</p>
+<h3>8.2 Qué Funciona Mejor Según el Contexto</h3>
+<ul>
+<li>Para <strong>redes pequeñas y acotadas</strong>, la alcanzabilidad exacta es el método preferido: ofrece respuestas definitivas y puede reconstruir secuencias de disparo.</li>
+<li>Para <strong>redes grandes o no acotadas</strong>, el árbol de cobertura y las propiedades cualitativas (acotación, vivacidad básica, bloqueos) son más apropiadas y siempre terminan en tiempo finito.</li>
+<li>El <strong>enfoque híbrido</strong> resulta el más robusto en la práctica general, ya que combina la precisión de la búsqueda exacta con la capacidad de síntesis del árbol de cobertura.</li>
+</ul>
+<h3>8.3 Limitaciones del Proyecto</h3>
+<ul>
+<li>Los <strong>límites de BFS</strong> (número de estados y profundidad) son arbitrarios y configurados manualmente; una heurística adaptativa mejoraría la usabilidad.</li>
+<li>El sistema <strong>no escala eficientemente</strong> a redes con decenas de lugares y transiciones, donde el espacio de estados crece de forma intratable.</li>
+<li>El <strong>árbol de cobertura puede volverse grande</strong> cuando múltiples lugares presentan crecimiento independiente, multiplicando los nodos con ω.</li>
+<li>La <strong>detección de cuellos de botella es heurística</strong>: el umbral basado en el promedio puede producir falsos positivos o negativos dependiendo de la distribución de tokens en la red.</li>
+<li>No se implementa vivacidad <em>completa</em> (liveness de nivel k), sino únicamente la detección de transiciones muertas como caso base.</li>
+</ul>
+<hr />
+<p><em>Informe generado como parte del trabajo de extensión del proyecto de redes de Petri. Todas las funcionalidades descritas corresponden exclusivamente a las implementadas en los módulos <code>model.py</code>, <code>engine.py</code>, <code>coverage.py</code>, <code>analysis.py</code> y <code>gui.py</code>.</em></p>
+
+      <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+    </html>
